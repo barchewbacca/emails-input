@@ -4,11 +4,10 @@ enum Key {
   BACKSPACE = 8,
   TAB = 9,
   ENTER = 13,
-  LEFT = 37,
-  RIGHT = 39,
-  DELETE = 46,
   COMMA = 188,
 }
+
+const SEPARATOR = ',';
 
 // interface Option {
 //   key: string;
@@ -23,11 +22,12 @@ export default class EmailsInputComponent {
 
   private containerNode: HTMLElement;
   // private options: Option[];
-  private component = this.createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
+  component = this.createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
   private input = this.createElement(
     'input',
     EmailsInputComponent.INPUT_CLASSNAME,
   ) as HTMLInputElement;
+  private entities: string[] = [];
 
   constructor(containerNode: HTMLElement) {
     this.containerNode = containerNode;
@@ -60,24 +60,62 @@ export default class EmailsInputComponent {
   private addEventListeners() {
     this.component.addEventListener('focus', () => {
       this.input.focus();
+      this.component.classList.add('is-focused');
     });
+
+    this.input.addEventListener('focus', () => this.component.classList.add('is-focused'));
+
+    this.input.addEventListener('blur', () => {
+      this.addEntity(this.input.value);
+      this.component.classList.remove('is-focused');
+    });
+
+    this.input.addEventListener('paste', () =>
+      setTimeout(
+        () => this.input.value.split(SEPARATOR).forEach((item) => this.addEntity(item.trim())),
+        0,
+      ),
+    );
 
     this.input.addEventListener('keydown', this.handleKeydown);
   }
 
-  private createEntity(value: string) {
-    const entity = this.createElement('div', EmailsInputComponent.ENTITY_CLASSNAME, value);
+  addEntity(value: string) {
+    if (value === '') {
+      return;
+    }
+
+    if (this.entities.some((item) => item === value)) {
+      return;
+    }
+
+    const emailRegExp = /^\S+@\S+\.\S+$/;
+    const isValid = emailRegExp.test(value);
+
+    let className = EmailsInputComponent.ENTITY_CLASSNAME;
+    if (!isValid) {
+      className += ' invalid';
+    }
+    const entity = this.createElement('div', className, value);
     const icon =
       '<svg width="8" height="8" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><path d="M8 0.8L7.2 0L4 3.2L0.8 0L0 0.8L3.2 4L0 7.2L0.8 8L4 4.8L7.2 8L8 7.2L4.8 4L8 0.8Z" /></svg>';
     const removeBtn = this.createElement('button', EmailsInputComponent.REMOVE_BUTTON_CLASSNAME);
     removeBtn.innerHTML = icon;
-    removeBtn.addEventListener('click', (event) => {
-      const target = event.currentTarget as HTMLElement;
-      target.parentNode?.parentNode?.removeChild(target.parentNode);
-    });
+    removeBtn.addEventListener('click', () => this.removeEntity(value));
     entity.appendChild(removeBtn);
     this.component.insertBefore(entity, this.input);
+    this.entities.push(value);
     this.input.value = '';
+    console.log('Entities', this.entities);
+  }
+
+  private removeEntity(entityValue: string) {
+    const entityNode = [
+      ...this.component.querySelectorAll(`.${EmailsInputComponent.ENTITY_CLASSNAME}`),
+    ].find((entity) => entity.textContent === entityValue) as Element;
+
+    this.component.removeChild(entityNode);
+    this.entities = this.entities.filter((item) => item !== entityValue);
   }
 
   private handleKeydown = (event: KeyboardEvent) => {
@@ -86,19 +124,36 @@ export default class EmailsInputComponent {
       case Key.ENTER:
       case Key.COMMA:
       case Key.ENTER:
-      case Key.TAB:
         event.preventDefault();
-        if (this.input.value) {
-          this.createEntity(this.input.value);
+        this.addEntity(this.input.value);
+        break;
+      case Key.TAB:
+        if (this.input.value === '') {
+          return;
         }
+        event.preventDefault();
+        this.addEntity(this.input.value);
         break;
       case Key.BACKSPACE:
-        const lastEntity = [
-          ...this.component.querySelectorAll(`.${EmailsInputComponent.ENTITY_CLASSNAME}`),
-        ].pop();
+        const lastEntity = this.entities[this.entities.length - 1];
         if (this.input.value === '' && lastEntity) {
-          this.component.removeChild(lastEntity);
+          event.preventDefault();
+          this.removeEntity(lastEntity);
         }
+        break;
     }
   };
+
+  getEntities(): string[] {
+    return this.entities;
+  }
+
+  replaceAll(newEntities: string) {
+    this.entities.forEach((item) => this.removeEntity(item));
+    newEntities.split(SEPARATOR).forEach((item) => this.addEntity(item.trim()));
+  }
+
+  // onEntityAdded() {}
+
+  // onEntityRemoved() {}
 }
