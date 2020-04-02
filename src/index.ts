@@ -43,3 +43,6 @@ getValidCountBtn?.addEventListener('click', () =>
 
 const replaceAllBtn = document.querySelector('[data-component="replace-all"]');
 replaceAllBtn?.addEventListener('click', () => emailsInputInstance.replaceAll(replaceAllCsv));
+
+emailsInputInstance.onEntityAdded((entity: string) => console.log('Entity added', entity));
+emailsInputInstance.onEntityRemoved((entity: string) => console.log('Entity removed', entity));

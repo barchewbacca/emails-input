@@ -28,6 +28,8 @@ export default class EmailsInputComponent {
     EmailsInputComponent.INPUT_CLASSNAME,
   ) as HTMLInputElement;
   private entities: string[] = [];
+  private _addCallback: (entity: string) => string;
+  private _removeCallback: (entity: string) => string;
 
   constructor(containerNode: HTMLElement) {
     this.containerNode = containerNode;
@@ -106,7 +108,7 @@ export default class EmailsInputComponent {
     this.component.insertBefore(entity, this.input);
     this.entities.push(value);
     this.input.value = '';
-    console.log('Entities', this.entities);
+    this._addCallback(value);
   }
 
   private removeEntity(entityValue: string) {
@@ -116,6 +118,7 @@ export default class EmailsInputComponent {
 
     this.component.removeChild(entityNode);
     this.entities = this.entities.filter((item) => item !== entityValue);
+    this._removeCallback(entityValue);
   }
 
   private handleKeydown = (event: KeyboardEvent) => {
@@ -153,7 +156,11 @@ export default class EmailsInputComponent {
     newEntities.split(SEPARATOR).forEach((item) => this.addEntity(item.trim()));
   }
 
-  // onEntityAdded() {}
+  onEntityAdded(callback: any) {
+    this._addCallback = (entity: string) => callback(entity);
+  }
 
-  // onEntityRemoved() {}
+  onEntityRemoved(callback: any) {
+    this._removeCallback = (entity: string) => callback(entity);
+  }
 }
