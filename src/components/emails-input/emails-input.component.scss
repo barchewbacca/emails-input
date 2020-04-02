@@ -1,15 +1,57 @@
 .emails-input {
+  display: flex;
+  align-content: flex-start;
+  flex-wrap: wrap;
   background: #ffffff;
   border: 1px solid #c3c2cf;
   border-radius: 4px;
-  padding: 8px;
+  padding: 6px;
   min-height: 96px;
+  font-size: 14px;
+  line-height: 1.7;
 
   &__input {
-    width: 100%;
-    // background: #f8f8f7;
-    font-size: 14px;
-    line-height: 1.7;
+    flex-grow: 1;
+    height: 24px;
+    margin: 2px;
+
+    &:focus {
+      outline: 0;
+    }
+
+    &::placeholder {
+      color: #c3c2cf;
+    }
+  }
+
+  &__entity {
+    display: inline-flex;
+    align-items: baseline;
+    height: 24px;
+    background: rgba(102, 153, 255, 0.2);
+    border-radius: 100px;
+    color: #050038;
+    padding: 0 10px;
+    margin: 2px;
+
+    &.invalid {
+      border-radius: 0;
+      background-color: transparent;
+      border-bottom: 1px dashed #d92929;
+      padding: 0;
+    }
+  }
+
+  &__entity-btn {
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+
+    &:hover {
+      transform: scale(1.1);
+    }
 
     &:focus {
       outline: 0;
