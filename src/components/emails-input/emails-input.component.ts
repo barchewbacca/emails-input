@@ -49,12 +49,9 @@ export default class EmailsInputComponent {
   }
 
   private initComponent() {
-    this.containerNode
-      .getAttributeNames()
-      .filter((attName) => attName !== 'data-component')
-      .forEach((attName) =>
-        this.input.setAttribute(attName, this.containerNode.getAttribute(attName) as string),
-      );
+    [...this.containerNode.attributes]
+      .filter((att) => att.name !== 'data-component')
+      .forEach((att) => this.input.setAttribute(att.name, att.value));
     this.component.tabIndex = 0;
     this.component.appendChild(this.input);
     this.containerNode?.parentNode?.replaceChild(this.component, this.containerNode);
