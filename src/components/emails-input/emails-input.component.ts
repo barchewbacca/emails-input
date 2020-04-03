@@ -230,7 +230,7 @@ export default class EmailsInputComponent {
   }
 
   /**
-   * Callback firing when the entity is removed from the emails input.
+   * Callback firing when the entity is added to the emails input.
    * @param callback Callback handler function.
    */
   onEntityAdded(callback: any) {
