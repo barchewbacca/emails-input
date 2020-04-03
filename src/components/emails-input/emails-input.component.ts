@@ -20,14 +20,41 @@ export default class EmailsInputComponent {
   static readonly FOCUSED_CLASSNAME = 'is-focused';
   static readonly INVALID_CLASSNAME = 'is-invalid';
 
+  /**
+   * Component node which contains the entities and input.
+   * @type {HTMLElement}
+   * @memberof EmailsInputComponent
+   */
   componentNode: HTMLElement;
 
+  /**
+   * The actual input which is responsible for adding and removing new entities.
+   * @private
+   * @type {HTMLInputElement}
+   * @memberof EmailsInputComponent
+   */
   private _input: HTMLInputElement;
 
+  /**
+   * List containing all the added entities. Both valid and invalid.
+   * @private
+   * @type {string[]}
+   * @memberof EmailsInputComponent
+   */
   private _entityList: string[] = [];
 
+  /**
+   * Callback which returns added entity value.
+   * @private
+   * @memberof EmailsInputComponent
+   */
   private _addCallback: (entityValue: string) => string;
 
+  /**
+   * Callback which returns removed entity value.
+   * @private
+   * @memberof EmailsInputComponent
+   */
   private _removeCallback: (entityValue: string) => string;
 
   constructor(private _containerNode: HTMLElement) {
@@ -35,6 +62,10 @@ export default class EmailsInputComponent {
     this._addEventListeners();
   }
 
+  /**
+   * Renders emails input component and the input inside of it.
+   * Replaces container node with the generated element.
+   */
   private _renderComponent() {
     this.componentNode = this._createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
     this.componentNode.tabIndex = 0;
@@ -50,6 +81,12 @@ export default class EmailsInputComponent {
     this._containerNode?.parentNode?.replaceChild(this.componentNode, this._containerNode);
   }
 
+  /**
+   * Utility method for creating an element.
+   * @param type HTML tag name.
+   * @param className Class name.
+   * @param content Text content.
+   */
   private _createElement<K extends keyof HTMLElementTagNameMap>(
     type: K,
     className: string,
@@ -65,6 +102,9 @@ export default class EmailsInputComponent {
     return element;
   }
 
+  /**
+   * Adds event listeners to the emails input.
+   */
   private _addEventListeners() {
     this.componentNode.addEventListener('focus', () => {
       this._input.focus();
@@ -90,13 +130,20 @@ export default class EmailsInputComponent {
     this._input.addEventListener('keydown', this._handleKeydown);
   }
 
+  /**
+   * Handles keydown event.
+   * On pressing ENTER and COMMA adds entity to the emails input.
+   * On pressing TAB adds entity to the emails input. If the value in empty focus jumps to the next tabindex.
+   * On pressing BACKSPACE removes the last entity in the list.
+   * @private
+   * @memberof EmailsInputComponent
+   */
   private _handleKeydown = (event: KeyboardEvent) => {
     const key = event.keyCode || event.which;
 
     switch (key) {
       case Key.ENTER:
       case Key.COMMA:
-      case Key.ENTER:
         event.preventDefault();
         this.addEntity(this._input.value);
         break;
