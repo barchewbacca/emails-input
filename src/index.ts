@@ -6,7 +6,7 @@ const emailsInput = document.querySelector('[data-component="emails-input"]') as
 const emailsInputInstance = new EmailsInputComponent(emailsInput);
 
 const addRandomBtn = document.querySelector('[data-component="add-random"]');
-let randomEmails = [
+let mockRandomEmails = [
   'kawasaki@outlook.com',
   'scarlet@msn.com',
   'kmself@gmail.com',
@@ -20,13 +20,13 @@ let randomEmails = [
   'avalon@msn.com',
   'draper@live.com',
 ];
-const replaceAllCsv = randomEmails.toString();
+const mockReplaceEmails = [...mockRandomEmails];
 // addEmailBtn?.addEventListener('click', () => emailsInputInstance.addEntity(faker.internet.email()));
 addRandomBtn?.addEventListener('click', () => {
-  const randomEmail = randomEmails[Math.floor(Math.random() * randomEmails.length)];
+  const randomEmail = mockRandomEmails[Math.floor(Math.random() * mockRandomEmails.length)];
   if (randomEmail) {
     emailsInputInstance.addEntity(randomEmail);
-    randomEmails = randomEmails.filter((email) => email !== randomEmail);
+    mockRandomEmails = mockRandomEmails.filter((email) => email !== randomEmail);
   } else {
     alert('No random emails left!');
   }
@@ -42,7 +42,7 @@ getValidCountBtn?.addEventListener('click', () =>
 );
 
 const replaceAllBtn = document.querySelector('[data-component="replace-all"]');
-replaceAllBtn?.addEventListener('click', () => emailsInputInstance.replaceAll(replaceAllCsv));
+replaceAllBtn?.addEventListener('click', () => emailsInputInstance.replaceAll(mockReplaceEmails));
 
 emailsInputInstance.onEntityAdded((entity: string) => console.log('Entity added', entity));
 emailsInputInstance.onEntityRemoved((entity: string) => console.log('Entity removed', entity));

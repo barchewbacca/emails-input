@@ -1,5 +1,3 @@
-import './emails-input.component.scss';
-
 enum Key {
   BACKSPACE = 8,
   TAB = 9,
@@ -40,11 +38,11 @@ export default class EmailsInputComponent {
 
   private createElement<K extends keyof HTMLElementTagNameMap>(
     type: K,
-    className?: string,
+    className: string,
     content?: string,
   ): HTMLElement | HTMLInputElement {
     const el = document.createElement(type);
-    if (className) el.className = className;
+    el.className = className;
     if (content) el.textContent = content;
 
     return el;
@@ -111,7 +109,7 @@ export default class EmailsInputComponent {
     this._addCallback(value);
   }
 
-  private removeEntity(entityValue: string) {
+  removeEntity(entityValue: string) {
     const entityNode = [
       ...this.component.querySelectorAll(`.${EmailsInputComponent.ENTITY_CLASSNAME}`),
     ].find((entity) => entity.textContent === entityValue) as Element;
@@ -151,9 +149,9 @@ export default class EmailsInputComponent {
     return this.entities;
   }
 
-  replaceAll(newEntities: string) {
+  replaceAll(newEntities: string[]) {
     this.entities.forEach((item) => this.removeEntity(item));
-    newEntities.split(SEPARATOR).forEach((item) => this.addEntity(item.trim()));
+    newEntities.forEach((item) => this.addEntity(item.trim()));
   }
 
   onEntityAdded(callback: any) {
