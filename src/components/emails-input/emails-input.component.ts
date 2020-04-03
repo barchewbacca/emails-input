@@ -21,7 +21,7 @@ export default class EmailsInputComponent {
   static readonly INVALID_CLASSNAME = 'is-invalid';
 
   /**
-   * Component node which contains the entities and input.
+   * Component node which contains the entities and the input.
    * @type {HTMLElement}
    * @memberof EmailsInputComponent
    */
