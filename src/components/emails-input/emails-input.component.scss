@@ -6,10 +6,17 @@
   border: 1px solid #c3c2cf;
   border-radius: 4px;
   padding: 6px;
-  min-height: 96px;
+  height: 96px;
   font-size: 14px;
   line-height: 1.7;
   transition: border-color 0.2s ease;
+  overflow: auto;
+
+  .is-expandable {
+    height: auto;
+    min-height: 96px;
+    overflow: visible;
+  }
 
   &.is-focused {
     border-color: #050038;
@@ -43,7 +50,7 @@
     text-overflow: ellipsis;
     position: relative;
 
-    &.invalid {
+    &.is-invalid {
       border-radius: 0;
       background-color: transparent;
       border-bottom: 1px dashed #d92929;
@@ -80,7 +87,7 @@
       outline: 0;
     }
 
-    .invalid & {
+    .is-invalid & {
       right: 0;
       width: 16px;
       justify-content: flex-end;

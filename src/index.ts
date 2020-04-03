@@ -36,7 +36,8 @@ const getValidCountBtn = document.querySelector('[data-component="get-valid-coun
 getValidCountBtn?.addEventListener('click', () =>
   alert(
     `Valid emails count: ${
-      emailsInputInstance.component.querySelectorAll('.emails-input__entity:not(.invalid)').length
+      emailsInputInstance.componentNode.querySelectorAll('.emails-input__entity:not(.is-invalid)')
+        .length
     }`,
   ),
 );
@@ -44,5 +45,5 @@ getValidCountBtn?.addEventListener('click', () =>
 const replaceAllBtn = document.querySelector('[data-component="replace-all"]');
 replaceAllBtn?.addEventListener('click', () => emailsInputInstance.replaceAll(mockReplaceEmails));
 
-emailsInputInstance.onEntityAdded((entity: string) => console.log('Entity added', entity));
-emailsInputInstance.onEntityRemoved((entity: string) => console.log('Entity removed', entity));
+emailsInputInstance.onEntityAdded((entity: string) => console.log('Added:', entity));
+emailsInputInstance.onEntityRemoved((entity: string) => console.log('Removed:', entity));

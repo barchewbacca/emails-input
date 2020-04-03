@@ -7,137 +7,113 @@ enum Key {
 
 const SEPARATOR = ',';
 
-// interface Option {
-//   key: string;
-//   value: string;
-// }
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+
+const REMOVE_ICON =
+  '<svg width="8" height="8" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><path d="M8 0.8L7.2 0L4 3.2L0.8 0L0 0.8L3.2 4L0 7.2L0.8 8L4 4.8L7.2 8L8 7.2L4.8 4L8 0.8Z" /></svg>';
 
 export default class EmailsInputComponent {
   static readonly COMPONENT_CLASSNAME = 'emails-input';
   static readonly INPUT_CLASSNAME = 'emails-input__input';
   static readonly ENTITY_CLASSNAME = 'emails-input__entity';
   static readonly REMOVE_BUTTON_CLASSNAME = 'emails-input__entity-btn';
+  static readonly FOCUSED_CLASSNAME = 'is-focused';
+  static readonly INVALID_CLASSNAME = 'is-invalid';
 
-  private containerNode: HTMLElement;
-  // private options: Option[];
-  component = this.createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
-  private input = this.createElement(
-    'input',
-    EmailsInputComponent.INPUT_CLASSNAME,
-  ) as HTMLInputElement;
-  private entities: string[] = [];
-  private _addCallback: (entity: string) => string;
-  private _removeCallback: (entity: string) => string;
+  componentNode: HTMLElement;
 
-  constructor(containerNode: HTMLElement) {
-    this.containerNode = containerNode;
-    // this.options = options;
-    this.initComponent();
-    this.addEventListeners();
+  private _input: HTMLInputElement;
+
+  private _entityList: string[] = [];
+
+  private _addCallback: (entityValue: string) => string;
+
+  private _removeCallback: (entityValue: string) => string;
+
+  constructor(private _containerNode: HTMLElement) {
+    this._renderComponent();
+    this._addEventListeners();
   }
 
-  private createElement<K extends keyof HTMLElementTagNameMap>(
+  private _renderComponent() {
+    this.componentNode = this._createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
+    this.componentNode.tabIndex = 0;
+    this._input = this._createElement(
+      'input',
+      EmailsInputComponent.INPUT_CLASSNAME,
+    ) as HTMLInputElement;
+    Array.prototype.slice
+      .call(this._containerNode.attributes)
+      .filter((att) => att.name !== 'data-component')
+      .forEach((att) => this._input.setAttribute(att.name as string, att.value as string));
+    this.componentNode.appendChild(this._input);
+    this._containerNode?.parentNode?.replaceChild(this.componentNode, this._containerNode);
+  }
+
+  private _createElement<K extends keyof HTMLElementTagNameMap>(
     type: K,
     className: string,
     content?: string,
   ): HTMLElement | HTMLInputElement {
-    const el = document.createElement(type);
-    el.className = className;
-    if (content) el.textContent = content;
+    const element = document.createElement(type);
+    element.className = className;
 
-    return el;
+    if (content) {
+      element.textContent = content;
+    }
+
+    return element;
   }
 
-  private initComponent() {
-    [...this.containerNode.attributes]
-      .filter((att) => att.name !== 'data-component')
-      .forEach((att) => this.input.setAttribute(att.name, att.value));
-    this.component.tabIndex = 0;
-    this.component.appendChild(this.input);
-    this.containerNode?.parentNode?.replaceChild(this.component, this.containerNode);
-  }
-
-  private addEventListeners() {
-    this.component.addEventListener('focus', () => {
-      this.input.focus();
-      this.component.classList.add('is-focused');
+  private _addEventListeners() {
+    this.componentNode.addEventListener('focus', () => {
+      this._input.focus();
+      this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
     });
 
-    this.input.addEventListener('focus', () => this.component.classList.add('is-focused'));
+    this._input.addEventListener('focus', () =>
+      this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME),
+    );
 
-    this.input.addEventListener('blur', () => {
-      this.addEntity(this.input.value);
-      this.component.classList.remove('is-focused');
+    this._input.addEventListener('blur', () => {
+      this.addEntity(this._input.value);
+      this.componentNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
     });
 
-    this.input.addEventListener('paste', () =>
+    this._input.addEventListener('paste', () =>
       setTimeout(
-        () => this.input.value.split(SEPARATOR).forEach((item) => this.addEntity(item.trim())),
+        () => this._input.value.split(SEPARATOR).forEach((item) => this.addEntity(item.trim())),
         0,
       ),
     );
 
-    this.input.addEventListener('keydown', this.handleKeydown);
+    this._input.addEventListener('keydown', this._handleKeydown);
   }
 
-  addEntity(value: string) {
-    if (value === '') {
-      return;
-    }
-
-    if (this.entities.some((item) => item === value)) {
-      return;
-    }
-
-    const emailRegExp = /^\S+@\S+\.\S+$/;
-    const isValid = emailRegExp.test(value);
-
-    let className = EmailsInputComponent.ENTITY_CLASSNAME;
-    if (!isValid) {
-      className += ' invalid';
-    }
-    const entity = this.createElement('div', className, value);
-    const icon =
-      '<svg width="8" height="8" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><path d="M8 0.8L7.2 0L4 3.2L0.8 0L0 0.8L3.2 4L0 7.2L0.8 8L4 4.8L7.2 8L8 7.2L4.8 4L8 0.8Z" /></svg>';
-    const removeBtn = this.createElement('button', EmailsInputComponent.REMOVE_BUTTON_CLASSNAME);
-    removeBtn.innerHTML = icon;
-    removeBtn.addEventListener('click', () => this.removeEntity(value));
-    entity.appendChild(removeBtn);
-    this.component.insertBefore(entity, this.input);
-    this.entities.push(value);
-    this.input.value = '';
-    this._addCallback(value);
-  }
-
-  removeEntity(entityValue: string) {
-    const entityNode = [
-      ...this.component.querySelectorAll(`.${EmailsInputComponent.ENTITY_CLASSNAME}`),
-    ].find((entity) => entity.textContent === entityValue) as Element;
-
-    this.component.removeChild(entityNode);
-    this.entities = this.entities.filter((item) => item !== entityValue);
-    this._removeCallback(entityValue);
-  }
-
-  private handleKeydown = (event: KeyboardEvent) => {
+  private _handleKeydown = (event: KeyboardEvent) => {
     const key = event.keyCode || event.which;
+
     switch (key) {
       case Key.ENTER:
       case Key.COMMA:
       case Key.ENTER:
         event.preventDefault();
-        this.addEntity(this.input.value);
+        this.addEntity(this._input.value);
         break;
       case Key.TAB:
-        if (this.input.value === '') {
+        const inputValue = this._input.value;
+
+        if (inputValue === '') {
           return;
         }
+
         event.preventDefault();
-        this.addEntity(this.input.value);
+        this.addEntity(inputValue);
         break;
       case Key.BACKSPACE:
-        const lastEntity = this.entities[this.entities.length - 1];
-        if (this.input.value === '' && lastEntity) {
+        const lastEntity = this._entityList[this._entityList.length - 1];
+
+        if (this._input.value === '' && lastEntity) {
           event.preventDefault();
           this.removeEntity(lastEntity);
         }
@@ -145,20 +121,80 @@ export default class EmailsInputComponent {
     }
   };
 
+  /**
+   * Adds new entity to the emails input.
+   * @param entityValue Entity value that needs to be added to the emails input.
+   */
+  addEntity(entityValue: string) {
+    if (entityValue === '') {
+      return;
+    }
+
+    if (this._entityList.some((item) => item === entityValue)) {
+      return;
+    }
+
+    const removeBtn = this._createElement('button', EmailsInputComponent.REMOVE_BUTTON_CLASSNAME);
+    removeBtn.innerHTML = REMOVE_ICON;
+    removeBtn.addEventListener('click', () => this.removeEntity(entityValue));
+
+    const isValid = EMAIL_REGEX.test(entityValue);
+    let className = EmailsInputComponent.ENTITY_CLASSNAME;
+
+    if (!isValid) {
+      className += ` ${EmailsInputComponent.INVALID_CLASSNAME}`;
+    }
+
+    const entityNode = this._createElement('div', className, entityValue);
+    entityNode.appendChild(removeBtn);
+    this.componentNode.insertBefore(entityNode, this._input);
+    this._entityList.push(entityValue);
+    this._input.value = '';
+    this._addCallback?.(entityValue);
+  }
+
+  /**
+   * Removes existing entity from the emails input.
+   * @param entityValue Entity value that needs to be removed from the emails input.
+   */
+  removeEntity(entityValue: string) {
+    const entityNode = Array.prototype.slice
+      .call(this.componentNode.querySelectorAll(`.${EmailsInputComponent.ENTITY_CLASSNAME}`))
+      .filter((node) => node.textContent === entityValue)[0];
+    this.componentNode.removeChild(entityNode);
+    this._entityList = this._entityList.filter((item) => item !== entityValue);
+    this._removeCallback?.(entityValue);
+  }
+
+  /**
+   * Returns the list of all entities added to the emails-input. Both valid and invalid.
+   */
   getEntities(): string[] {
-    return this.entities;
+    return this._entityList;
   }
 
-  replaceAll(newEntities: string[]) {
-    this.entities.forEach((item) => this.removeEntity(item));
-    newEntities.forEach((item) => this.addEntity(item.trim()));
+  /**
+   * Replaces all entities added to the emails-input with provided entity list.
+   * @param newEntityList A list of new entities that needs to be added to the emails input.
+   */
+  replaceAll(newEntityList: string[]) {
+    this._entityList.forEach((item) => this.removeEntity(item));
+    newEntityList.forEach((item) => this.addEntity(item.trim()));
   }
 
+  /**
+   * Callback firing when the entity is removed from the emails input.
+   * @param callback Callback handler function.
+   */
   onEntityAdded(callback: any) {
-    this._addCallback = (entity: string) => callback(entity);
+    this._addCallback = (entityValue: string) => callback(entityValue);
   }
 
+  /**
+   * Callback firing when the entity is removed from the emails input.
+   * @param callback Callback handler function.
+   */
   onEntityRemoved(callback: any) {
-    this._removeCallback = (entity: string) => callback(entity);
+    this._removeCallback = (entityValue: string) => callback(entityValue);
   }
 }
