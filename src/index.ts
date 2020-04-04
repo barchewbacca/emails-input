@@ -1,12 +1,31 @@
 import './index.scss';
-// import faker from 'faker';
+import faker from 'faker';
 import EmailsInputComponent from './components/emails-input/emails-input.component';
 
+// Init EmailsInputComponent
 const emailsInput = document.querySelector('[data-component="emails-input"]') as HTMLElement;
 const emailsInputInstance = new EmailsInputComponent(emailsInput);
 
+// Initialize 'Add random' button
 const addRandomBtn = document.querySelector('[data-component="add-random"]');
-let mockRandomEmails = [
+addRandomBtn?.addEventListener('click', () =>
+  emailsInputInstance.addEntity(faker.internet.email()),
+);
+
+// Init 'Get emails count' button
+const getValidCountBtn = document.querySelector('[data-component="get-valid-count"]');
+getValidCountBtn?.addEventListener('click', () =>
+  alert(
+    `Valid emails count: ${
+      emailsInputInstance.componentNode.querySelectorAll('.emails-input__entity:not(.is-invalid)')
+        .length
+    }`,
+  ),
+);
+
+// Init 'Replace all' button
+const replaceAllBtn = document.querySelector('[data-component="replace-all"]');
+const mockReplaceEmails = [
   'kawasaki@outlook.com',
   'scarlet@msn.com',
   'kmself@gmail.com',
@@ -20,30 +39,8 @@ let mockRandomEmails = [
   'avalon@msn.com',
   'draper@live.com',
 ];
-const mockReplaceEmails = [...mockRandomEmails];
-// addEmailBtn?.addEventListener('click', () => emailsInputInstance.addEntity(faker.internet.email()));
-addRandomBtn?.addEventListener('click', () => {
-  const randomEmail = mockRandomEmails[Math.floor(Math.random() * mockRandomEmails.length)];
-  if (randomEmail) {
-    emailsInputInstance.addEntity(randomEmail);
-    mockRandomEmails = mockRandomEmails.filter((email) => email !== randomEmail);
-  } else {
-    alert('No random emails left!');
-  }
-});
-
-const getValidCountBtn = document.querySelector('[data-component="get-valid-count"]');
-getValidCountBtn?.addEventListener('click', () =>
-  alert(
-    `Valid emails count: ${
-      emailsInputInstance.componentNode.querySelectorAll('.emails-input__entity:not(.is-invalid)')
-        .length
-    }`,
-  ),
-);
-
-const replaceAllBtn = document.querySelector('[data-component="replace-all"]');
 replaceAllBtn?.addEventListener('click', () => emailsInputInstance.replaceAll(mockReplaceEmails));
 
+// Subscribe to onEntityAdded and onEntityRemoved callbacks
 emailsInputInstance.onEntityAdded((entity: string) => console.log('Added:', entity));
 emailsInputInstance.onEntityRemoved((entity: string) => console.log('Removed:', entity));

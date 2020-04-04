@@ -3,15 +3,12 @@
   "version": "1.0.0",
   "description": "Test assignment for Miro.",
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "webpack --mode=production",
     "start": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
-    "e2e": "cypress run"
+    "e2e": "cypress run",
+    "e2e:headed": "cypress run --headed"
   },
   "author": {
     "name": "Ilia Barchugov",
@@ -38,7 +35,6 @@
     "fork-ts-checker-webpack-plugin": "4.1.2",
     "html-webpack-plugin": "^4.0.3",
     "jest": "^25.2.4",
-    "jest-transform-css": "^2.0.0",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.13.1",
     "postcss-loader": "^3.0.0",

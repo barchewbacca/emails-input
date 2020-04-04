@@ -1,16 +1,16 @@
-enum Key {
-  BACKSPACE = 8,
-  TAB = 9,
-  ENTER = 13,
-  COMMA = 188,
-}
-
 const SEPARATOR = ',';
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
 const REMOVE_ICON =
   '<svg width="8" height="8" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><path d="M8 0.8L7.2 0L4 3.2L0.8 0L0 0.8L3.2 4L0 7.2L0.8 8L4 4.8L7.2 8L8 7.2L4.8 4L8 0.8Z" /></svg>';
+
+export enum Key {
+  BACKSPACE = 8,
+  TAB = 9,
+  ENTER = 13,
+  COMMA = 188,
+}
 
 export default class EmailsInputComponent {
   static readonly COMPONENT_CLASSNAME = 'emails-input';
@@ -106,29 +106,50 @@ export default class EmailsInputComponent {
    * Adds event listeners to the emails input.
    */
   private _addEventListeners() {
-    this.componentNode.addEventListener('focus', () => {
-      this._input.focus();
-      this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
-    });
-
-    this._input.addEventListener('focus', () =>
-      this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME),
-    );
-
-    this._input.addEventListener('blur', () => {
-      this.addEntity(this._input.value);
-      this.componentNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
-    });
-
-    this._input.addEventListener('paste', () =>
-      setTimeout(
-        () => this._input.value.split(SEPARATOR).forEach((item) => this.addEntity(item.trim())),
-        0,
-      ),
-    );
-
+    this.componentNode.addEventListener('focus', this._handleComponentFocus);
+    this._input.addEventListener('focus', this._handleInputFocus);
+    this._input.addEventListener('blur', this._handleBlur);
+    this._input.addEventListener('paste', this._handlePaste);
     this._input.addEventListener('keydown', this._handleKeydown);
   }
+
+  /**
+   * Handles focus event on component. Redirects focus to the input and styles the emails input.
+   * @private
+   * @memberof EmailsInputComponent
+   */
+  private _handleComponentFocus = () => {
+    this._input.focus();
+    this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+  };
+
+  /**
+   * Handles focus event on input and styles emails input.
+   * @private
+   * @memberof EmailsInputComponent
+   */
+  private _handleInputFocus = () => {
+    this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+  };
+
+  /**
+   * Handles blur event. Adds entity if it's not empty and removes focus styling.
+   * @private
+   * @memberof EmailsInputComponent
+   */
+  private _handleBlur = () => {
+    this.addEntity(this._input.value);
+    this.componentNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
+  };
+
+  /**
+   * Handles paste event. Parses the pasted string and adds entities.
+   * @private
+   * @memberof EmailsInputComponent
+   */
+  private _handlePaste = () => {
+    setTimeout(() => this._input.value.split(SEPARATOR).forEach((item) => this.addEntity(item)), 0);
+  };
 
   /**
    * Handles keydown event.
@@ -139,9 +160,7 @@ export default class EmailsInputComponent {
    * @memberof EmailsInputComponent
    */
   private _handleKeydown = (event: KeyboardEvent) => {
-    const key = event.keyCode || event.which;
-
-    switch (key) {
+    switch (event.keyCode) {
       case Key.ENTER:
       case Key.COMMA:
         event.preventDefault();
@@ -173,6 +192,8 @@ export default class EmailsInputComponent {
    * @param entityValue Entity value that needs to be added to the emails input.
    */
   addEntity(entityValue: string) {
+    entityValue = entityValue.trim();
+
     if (entityValue === '') {
       return;
     }

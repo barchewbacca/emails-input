@@ -47,4 +47,27 @@ describe('EmailsInputComponent', () => {
     // assert
     cy.get('.emails-input__entity').should('not.exist');
   })
+
+  it('should add random email on clicking "Add email" button', () => {
+    // act
+    for (let i = 0; i < 10; i++) {
+      cy.get('[data-component="add-random"]').click();
+    }
+
+    // assert
+    cy.get('.emails-input__entity').should('have.length', 10);
+  })
+
+  it('should return valid emails count on clicking "Get emails count" button', () => {
+    // arrange
+    cy.get('.emails-input__input').type('invalid email,valid@email.com');
+    const stub = cy.stub()
+    cy.on ('window:alert', stub)
+
+    // act
+    cy.get('[data-component="get-valid-count"]').click().then(() => {
+      // assert
+      expect(stub.getCall(0)).to.be.calledWith('Valid emails count: 11')
+    });
+  })
 })
