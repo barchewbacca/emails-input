@@ -16,10 +16,7 @@ addRandomBtn?.addEventListener('click', () =>
 const getValidCountBtn = document.querySelector('[data-component="get-valid-count"]');
 getValidCountBtn?.addEventListener('click', () =>
   alert(
-    `Valid emails count: ${
-      emailsInputInstance.componentNode.querySelectorAll('.emails-input__entity:not(.is-invalid)')
-        .length
-    }`,
+    `Valid emails count: ${emailsInputInstance.getEntities().filter((item) => item.valid).length}`,
   ),
 );
 

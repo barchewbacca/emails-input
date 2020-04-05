@@ -8,6 +8,7 @@
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "e2e": "cypress run",
+    "e2e:open": "cypress open",
     "e2e:headed": "cypress run --headed"
   },
   "author": {

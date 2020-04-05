@@ -6,16 +6,21 @@
   border: 1px solid #c3c2cf;
   border-radius: 4px;
   padding: 6px;
-  height: 96px;
   font-size: 14px;
   line-height: 1.7;
   transition: border-color 0.2s ease;
-  overflow: auto;
+  min-height: 96px;
 
-  .is-expandable {
-    height: auto;
-    min-height: 96px;
-    overflow: visible;
+  @include screen-md {
+    height: 96px;
+    overflow: auto;
+    min-height: none;
+
+    &.is-expandable {
+      height: auto;
+      min-height: 96px;
+      overflow: visible;
+    }
   }
 
   &.is-focused {

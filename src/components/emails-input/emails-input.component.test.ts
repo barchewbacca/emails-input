@@ -8,6 +8,7 @@ describe('EmailsInputComponent', () => {
     const mockNodeContainer = document.createElement('div');
     mockNodeContainer.setAttribute('data-component', 'emails-input');
     mockNodeContainer.setAttribute('id', 'qa-emails-input');
+    mockNodeContainer.setAttribute('name', 'qa-emails-name');
     emailsInputComponent = new EmailsInputComponent(mockNodeContainer);
     emailsInputComponent.onEntityAdded(() => {});
     emailsInputComponent.onEntityRemoved(() => {});
@@ -23,7 +24,9 @@ describe('EmailsInputComponent', () => {
     emailsInputComponent.addEntity('foma@kiniaev.com');
 
     // assert
-    expect(emailsInputComponent.getEntities()).toEqual(['foma@kiniaev.com']);
+    expect(emailsInputComponent.getEntities()).toEqual([
+      { value: 'foma@kiniaev.com', valid: true },
+    ]);
   });
 
   it('should not add entity if it is empty', () => {
@@ -31,7 +34,9 @@ describe('EmailsInputComponent', () => {
     emailsInputComponent.addEntity('');
 
     // assert
-    expect(emailsInputComponent.getEntities()).toEqual(['foma@kiniaev.com']);
+    expect(emailsInputComponent.getEntities()).toEqual([
+      { value: 'foma@kiniaev.com', valid: true },
+    ]);
   });
 
   it('should not add same entity twice', () => {
@@ -39,7 +44,9 @@ describe('EmailsInputComponent', () => {
     emailsInputComponent.addEntity('foma@kiniaev.com');
 
     // assert
-    expect(emailsInputComponent.getEntities()).toEqual(['foma@kiniaev.com']);
+    expect(emailsInputComponent.getEntities()).toEqual([
+      { value: 'foma@kiniaev.com', valid: true },
+    ]);
   });
 
   it('should add invalid entity', () => {
@@ -47,7 +54,10 @@ describe('EmailsInputComponent', () => {
     emailsInputComponent.addEntity('Foma Kiniaev');
 
     // assert
-    expect(emailsInputComponent.getEntities()).toEqual(['foma@kiniaev.com', 'Foma Kiniaev']);
+    expect(emailsInputComponent.getEntities()).toEqual([
+      { value: 'foma@kiniaev.com', valid: true },
+      { value: 'Foma Kiniaev', valid: false },
+    ]);
   });
 
   it('should replace all entities', () => {
@@ -55,7 +65,9 @@ describe('EmailsInputComponent', () => {
     emailsInputComponent.replaceAll(['hideo@kodjima.com']);
 
     // assert
-    expect(emailsInputComponent.getEntities()).toEqual(['hideo@kodjima.com']);
+    expect(emailsInputComponent.getEntities()).toEqual([
+      { value: 'hideo@kodjima.com', valid: true },
+    ]);
   });
 
   it('should remove entitity on BACKSPACE key', () => {

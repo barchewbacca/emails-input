@@ -15,10 +15,10 @@ describe('EmailsInputComponent', () => {
 
   it('should add entity on ENTER and COMMA key', () => {
     // act
-    cy.get('.emails-input__input').type('Hello World{enter}jason.bourne@mail.com,foma.kiniaev@aol.com,');
+    cy.get('.emails-input__input').type('HelloWorld{enter}jason.bourne@mail.com,foma.kiniaev@aol.com,');
 
     // assert
-    cy.get('.emails-input__entity:first-child').should('contain.text', 'Hello World');
+    cy.get('.emails-input__entity:nth-child(1)').should('contain.text', 'HelloWorld');
     cy.get('.emails-input__entity:nth-child(2)').should('contain.text', 'jason.bourne@mail.com');
     cy.get('.emails-input__entity:nth-child(3)').should('contain.text', 'foma.kiniaev@aol.com');
   })
@@ -33,10 +33,10 @@ describe('EmailsInputComponent', () => {
 
   it('should distinguish valid and invalid emails', () => {
     // act
-    cy.get('.emails-input__input').type('Hello World{enter}foma.kiniaev@gmail.com{enter}');
+    cy.get('.emails-input__input').type('HelloWorld{enter}foma.kiniaev@gmail.com{enter}');
 
     // assert
-    cy.get('.emails-input__entity:first-child').should('have.class', 'is-invalid');
+    cy.get('.emails-input__entity:nth-child(1)').should('have.class', 'is-invalid');
     cy.get('.emails-input__entity:nth-child(2)').should('not.have.class', 'is-invalid');
   })
 
@@ -60,7 +60,7 @@ describe('EmailsInputComponent', () => {
 
   it('should return valid emails count on clicking "Get emails count" button', () => {
     // arrange
-    cy.get('.emails-input__input').type('invalid email,valid@email.com');
+    cy.get('.emails-input__input').type('InvalidEmail,valid@email.com');
     const stub = cy.stub()
     cy.on ('window:alert', stub)
 
