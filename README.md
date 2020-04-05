@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="screenshot.png" alt="Emails input screenshot">
+  <a href="" rel="noopener">
+    <img src="screenshot.png" alt="Emails input screenshot">
+  </a>
 </p>
 <h3 align="center">Emails Input Component</h3>
 
