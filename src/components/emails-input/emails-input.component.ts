@@ -249,8 +249,8 @@ export default class EmailsInputComponent {
    * Removes all emails from the emails-input.
    */
   private clearAll() {
-    const emailNodes = this.componentNode.querySelectorAll(
-      `.${EmailsInputComponent.EMAIL_CLASSNAME}`,
+    const emailNodes = Array.prototype.slice.call(
+      this.componentNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`),
     );
     emailNodes.forEach((emailNode) => {
       this.componentNode.removeChild(emailNode);
