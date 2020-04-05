@@ -151,7 +151,7 @@ npm run e2e:open
 
 You may find the e2e tests capture video here: `cypress/videos/`.
 
-<img src="e2e-report.png" alt="e2e tests report screenshot">
+<img src="e2e-report.gif" alt="e2e tests report screenshot">
 
 ## 🎈 Usage <a name="usage"></a>
 
