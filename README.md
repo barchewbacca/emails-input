@@ -183,33 +183,33 @@ const emailsInputInstance = new EmailsInputComponent(emailsInput);
 Methods are called on emails-input instances.
 
 ```ts
-// add entity
-emailsInputInstance.addEntity('test@gmail.com');
+// add email
+emailsInputInstance.addEmail('test@gmail.com');
 
-// remove entity
-emailsInputInstance.removeEntity('test@gmail.com');
+// remove email
+emailsInputInstance.removeEmail('test@gmail.com');
 
-// get entities
-emailsInputInstance.getEntities();
+// get emails
+emailsInputInstance.getEmails();
 
 // replace all
 emailsInputInstance.replaceAll(['valid@email.com', 'invalid email']);
 
-// on entity added
-emailsInputInstance.onEntityAdded((entity: string) => console.log('Added:', entity));
+// on email added
+emailsInputInstance.onEmailAdded((email: string) => console.log('Added:', email));
 
-// on entity removed
-emailsInputInstance.onEntityRemoved((entity: string) => console.log('Removed:', entity));
+// on email removed
+emailsInputInstance.onEmailRemoved((email: string) => console.log('Removed:', email));
 ```
 
-| Method            | Argument                  | Description                                                                |
-| ----------------- | ------------------------- | -------------------------------------------------------------------------- |
-| `addEntity`       | entityValue: string       | Adds new entity to the list                                                |
-| `removeEntity`    | entityValue: string       | Removes existing entity from the list                                      |
-| `getEntities`     |                           | Returns all entities, both valid and invalid                               |
-| `replaceAll`      | newEntityValues: string[] | Replaces all entities added to the emails-input with provided entity list. |
-| `onEntityAdded`   | callback: function        | Callback firing when the entity is added to the emails-input.              |
-| `onEntityRemoved` | callback: function        | Callback firing when the entity is removed from the emails-input.          |
+| Method           | Argument                 | Description                                                                  |
+| ---------------- | ------------------------ | ---------------------------------------------------------------------------- |
+| `addEmail`       | emailValue: string       | Adds new email to the list. Email won't be added if it's already in the list |
+| `removeEmail`    | emailValue: string       | Removes existing email from the list                                         |
+| `getEmails`      |                          | Returns all emails, both valid and invalid                                   |
+| `replaceAll`     | newEmailValues: string[] | Replaces all emails added to the emails-input with provided email list       |
+| `onEmailAdded`   | callback: function       | Callback firing when the email is added to the emails-input                  |
+| `onEmailRemoved` | callback: function       | Callback firing when the email is removed from the emails-input              |
 
 ## ⛏️ Tools <a name = "tools"></a>
 

@@ -8,15 +8,13 @@ const emailsInputInstance = new EmailsInputComponent(emailsInput);
 
 // Initialize 'Add random' button
 const addRandomBtn = document.querySelector('[data-component="add-random"]');
-addRandomBtn?.addEventListener('click', () =>
-  emailsInputInstance.addEntity(faker.internet.email()),
-);
+addRandomBtn?.addEventListener('click', () => emailsInputInstance.addEmail(faker.internet.email()));
 
 // Init 'Get emails count' button
 const getValidCountBtn = document.querySelector('[data-component="get-valid-count"]');
 getValidCountBtn?.addEventListener('click', () =>
   alert(
-    `Valid emails count: ${emailsInputInstance.getEntities().filter((item) => item.valid).length}`,
+    `Valid emails count: ${emailsInputInstance.getEmails().filter((item) => item.valid).length}`,
   ),
 );
 
@@ -38,6 +36,6 @@ const mockReplaceEmails = [
 ];
 replaceAllBtn?.addEventListener('click', () => emailsInputInstance.replaceAll(mockReplaceEmails));
 
-// Subscribe to onEntityAdded and onEntityRemoved callbacks
-emailsInputInstance.onEntityAdded((entity: string) => console.log('Added:', entity));
-emailsInputInstance.onEntityRemoved((entity: string) => console.log('Removed:', entity));
+// Subscribe to onEmailAdded and onEmailRemoved callbacks
+emailsInputInstance.onEmailAdded((email: string) => console.log('Added:', email));
+emailsInputInstance.onEmailRemoved((email: string) => console.log('Removed:', email));

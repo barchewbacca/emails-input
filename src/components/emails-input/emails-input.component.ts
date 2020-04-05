@@ -12,7 +12,7 @@ export enum Key {
   COMMA = 188,
 }
 
-interface Entity {
+interface Email {
   value: string;
   valid: boolean;
 }
@@ -20,97 +20,95 @@ interface Entity {
 export default class EmailsInputComponent {
   static readonly COMPONENT_CLASSNAME = 'emails-input';
   static readonly INPUT_CLASSNAME = 'emails-input__input';
-  static readonly ENTITY_CLASSNAME = 'emails-input__entity';
-  static readonly REMOVE_BUTTON_CLASSNAME = 'emails-input__entity-btn';
+  static readonly EMAIL_CLASSNAME = 'emails-input__email';
+  static readonly REMOVE_BUTTON_CLASSNAME = 'emails-input__email-btn';
   static readonly FOCUSED_CLASSNAME = 'is-focused';
   static readonly INVALID_CLASSNAME = 'is-invalid';
 
   /**
-   * Component node which contains the entities and the input.
+   * Component node which contains the emails and the input.
    * @type {HTMLElement}
-   * @memberof EmailsInputComponent
    */
   componentNode: HTMLElement;
 
   /**
-   * The hidden input that holds the value of all valid added entities.
+   * The hidden input that holds the value of all valid added emails.
    * This value is taken on form submit.
    * @private
    * @type {HTMLInputElement}
-   * @memberof EmailsInputComponent
    */
-  private _hiddenInput: HTMLInputElement;
+  private hiddenInput: HTMLInputElement;
 
   /**
-   * The input which is responsible for adding and removing new entities.
+   * The input which is responsible for adding and removing new emails.
    * @private
    * @type {HTMLInputElement}
-   * @memberof EmailsInputComponent
    */
-  private _input: HTMLInputElement;
+  private input: HTMLInputElement;
 
   /**
-   * List containing all the added entities. Both valid and invalid.
+   * List containing all the added emails. Both valid and invalid.
    * @private
-   * @type {Entity[]}
-   * @memberof EmailsInputComponent
+   * @type {Email[]}
    */
-  private _entityList: Entity[] = [];
+  private emailList: Email[] = [];
 
   /**
-   * Callback which returns added entity value.
+   * Callback which returns added email value.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _addCallback: (entityValue: string) => string;
+  private addCallback: (emailValue: string) => string;
 
   /**
-   * Callback which returns removed entity value.
+   * Callback which returns removed email value.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _removeCallback: (entityValue: string) => string;
+  private removeCallback: (emailValue: string) => string;
 
-  constructor(private _containerNode: HTMLElement) {
-    this._renderComponent();
-    this._addEventListeners();
+  constructor(private containerNode: HTMLElement) {
+    if (!this.containerNode) {
+      throw new Error('Container node is not found.');
+    }
+
+    this.renderComponent();
+    this.addEventListeners();
   }
 
   /**
    * Renders emails input component and the input inside of it.
    * Replaces container node with the generated element.
    */
-  private _renderComponent() {
-    this.componentNode = this._createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
+  private renderComponent() {
+    this.componentNode = this.createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
     this.componentNode.tabIndex = 0;
 
     const attributes = Array.prototype.slice
-      .call(this._containerNode.attributes)
+      .call(this.containerNode.attributes)
       .filter((att) => att.name !== 'data-component');
 
-    this._input = this._createElement(
+    this.input = this.createElement(
       'input',
       EmailsInputComponent.INPUT_CLASSNAME,
     ) as HTMLInputElement;
-    this._input.type = 'email';
+    this.input.type = 'email';
     const inputAttributes = attributes.filter((att) => att.name !== 'name');
-    inputAttributes.forEach((att) => this._input.setAttribute(att.name, att.value));
-    this.componentNode.appendChild(this._input);
+    inputAttributes.forEach((att) => this.input.setAttribute(att.name, att.value));
+    this.componentNode.appendChild(this.input);
 
-    this._hiddenInput = this._createElement('input') as HTMLInputElement;
-    this._hiddenInput.type = 'hidden';
+    this.hiddenInput = this.createElement('input') as HTMLInputElement;
+    this.hiddenInput.type = 'hidden';
     const hiddenInputAttributes = attributes.filter((att) => att.name === 'name');
-    hiddenInputAttributes.forEach((att) => this._hiddenInput.setAttribute(att.name, att.value));
-    this.componentNode.appendChild(this._hiddenInput);
+    hiddenInputAttributes.forEach((att) => this.hiddenInput.setAttribute(att.name, att.value));
+    this.componentNode.appendChild(this.hiddenInput);
 
-    this._containerNode?.parentNode?.replaceChild(this.componentNode, this._containerNode);
+    this.containerNode!.parentNode!.replaceChild(this.componentNode, this.containerNode);
   }
 
   /**
-   * Saves all the valid entities as a value of the hidden input.
+   * Saves all the valid emails as a value of the hidden input.
    */
-  private _saveHiddenInputValue() {
-    this._hiddenInput.value = this._entityList
+  private saveHiddenInputValue() {
+    this.hiddenInput.value = this.emailList
       .filter((item) => item.valid)
       .map((item) => item.value)
       .toString();
@@ -122,8 +120,8 @@ export default class EmailsInputComponent {
    * @param className Class name.
    * @param content Text content.
    */
-  private _createElement<K extends keyof HTMLElementTagNameMap>(
-    type: K,
+  private createElement(
+    type: keyof HTMLElementTagNameMap,
     className?: string,
     content?: string,
   ): HTMLElement | HTMLInputElement {
@@ -141,165 +139,200 @@ export default class EmailsInputComponent {
   }
 
   /**
+   * Creates email element and add a close button.
+   * @param value Email value.
+   * @param valid Indicates if the email is valid.
+   */
+  private createEmailElement(value: string, valid: boolean): HTMLElement {
+    const className = valid
+      ? EmailsInputComponent.EMAIL_CLASSNAME
+      : `${EmailsInputComponent.EMAIL_CLASSNAME} ${EmailsInputComponent.INVALID_CLASSNAME}`;
+    const emailNode = this.createElement('div', className, value);
+
+    const removeBtn = this.createElement('button', EmailsInputComponent.REMOVE_BUTTON_CLASSNAME);
+    removeBtn.innerHTML = REMOVE_ICON;
+    removeBtn.addEventListener('click', () => this.removeEmail(value));
+    emailNode.appendChild(removeBtn);
+
+    return emailNode;
+  }
+
+  /**
    * Adds event listeners to the emails input.
    */
-  private _addEventListeners() {
-    this.componentNode.addEventListener('focus', this._handleComponentFocus);
-    this._input.addEventListener('focus', this._handleInputFocus);
-    this._input.addEventListener('blur', this._handleBlur);
-    this._input.addEventListener('paste', this._handlePaste);
-    this._input.addEventListener('keydown', this._handleKeydown);
+  private addEventListeners() {
+    this.componentNode.addEventListener('focus', this.handleComponentFocus);
+    this.input.addEventListener('focus', this.handleInputFocus);
+    this.input.addEventListener('blur', this.handleBlur);
+    this.input.addEventListener('paste', this.handlePaste);
+    this.input.addEventListener('keydown', this.handleKeydown);
   }
 
   /**
    * Handles focus event on component. Redirects focus to the input and styles the emails input.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _handleComponentFocus = () => {
-    this._input.focus();
+  private handleComponentFocus = () => {
+    this.input.focus();
     this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 
   /**
    * Handles focus event on input and styles emails input.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _handleInputFocus = () => {
+  private handleInputFocus = () => {
     this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 
   /**
-   * Handles blur event. Adds entity if it's not empty and removes focus styling.
+   * Handles blur event. Adds email if it's not empty and removes focus styling.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _handleBlur = () => {
-    this.addEntity(this._input.value);
+  private handleBlur = () => {
+    this.addEmail(this.input.value);
     this.componentNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 
   /**
-   * Handles paste event. Parses the pasted string and adds entities.
+   * Handles paste event. Parses the pasted string and adds emails.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _handlePaste = () => {
-    setTimeout(() => this._input.value.split(SEPARATOR).forEach((item) => this.addEntity(item)), 0);
+  private handlePaste = () => {
+    setTimeout(() => this.input.value.split(SEPARATOR).forEach((item) => this.addEmail(item)), 0);
   };
 
   /**
    * Handles keydown event.
-   * On pressing ENTER and COMMA adds entity to the emails input.
-   * On pressing TAB adds entity to the emails input. If the value in empty focus jumps to the next tabindex.
-   * On pressing BACKSPACE removes the last entity in the list.
+   * On pressing ENTER and COMMA adds email to the emails input.
+   * On pressing TAB adds email to the emails input. If the value in empty focus jumps to the next tabindex.
+   * On pressing BACKSPACE removes the last email in the list.
    * @private
-   * @memberof EmailsInputComponent
    */
-  private _handleKeydown = (event: KeyboardEvent) => {
+  private handleKeydown = (event: KeyboardEvent) => {
     switch (event.keyCode) {
       case Key.ENTER:
       case Key.COMMA:
         event.preventDefault();
-        this.addEntity(this._input.value);
+        this.addEmail(this.input.value);
         break;
       case Key.TAB:
-        const inputValue = this._input.value;
+        const inputValue = this.input.value;
 
         if (inputValue === '') {
           return;
         }
 
         event.preventDefault();
-        this.addEntity(inputValue);
+        this.addEmail(inputValue);
         break;
       case Key.BACKSPACE:
-        const lastEntity = this._entityList[this._entityList.length - 1];
+        const lastEmail = this.emailList[this.emailList.length - 1];
 
-        if (this._input.value === '' && lastEntity) {
+        if (this.input.value === '' && lastEmail) {
           event.preventDefault();
-          this.removeEntity(lastEntity.value);
+          this.removeEmail(lastEmail.value);
         }
         break;
     }
   };
 
   /**
-   * Adds new entity to the emails input.
-   * @param entityValue Entity value that needs to be added to the emails input.
+   * Validates email value and returns true if it's valid.
+   * @param value Email value.
    */
-  addEntity(entityValue: string) {
-    entityValue = entityValue.trim();
+  private validateEmail(value: string): boolean {
+    return EMAIL_REGEX.test(value);
+  }
 
-    if (entityValue === '') {
+  /**
+   * Removes all emails from the emails-input.
+   */
+  private clearAll() {
+    const emailNodes = this.componentNode.querySelectorAll(
+      `.${EmailsInputComponent.EMAIL_CLASSNAME}`,
+    );
+    emailNodes.forEach((emailNode) => {
+      this.componentNode.removeChild(emailNode);
+      this.removeCallback?.(emailNode.textContent as string);
+    });
+    this.emailList = [];
+    this.saveHiddenInputValue();
+  }
+
+  /**
+   * Adds new email to the emails input.
+   * @param emailValue Email value that needs to be added to the emails input.
+   */
+  addEmail(emailValue: string): any {
+    emailValue = emailValue.trim();
+
+    if (emailValue === '') {
       return;
     }
 
-    if (this._entityList.some((item) => item.value === entityValue)) {
-      return;
+    if (emailValue.indexOf(SEPARATOR) !== -1) {
+      const emailValueList = emailValue.split(SEPARATOR);
+      return emailValueList.forEach((item) => this.addEmail(item));
     }
 
-    const removeBtn = this._createElement('button', EmailsInputComponent.REMOVE_BUTTON_CLASSNAME);
-    removeBtn.innerHTML = REMOVE_ICON;
-    removeBtn.addEventListener('click', () => this.removeEntity(entityValue));
+    if (this.emailList.some((item) => item.value === emailValue)) {
+      return console.error(`Value "${emailValue}" is already in the list!`);
+    }
 
-    const isValid = EMAIL_REGEX.test(entityValue);
-    const className = isValid
-      ? EmailsInputComponent.ENTITY_CLASSNAME
-      : `${EmailsInputComponent.ENTITY_CLASSNAME} ${EmailsInputComponent.INVALID_CLASSNAME}`;
-    const entityNode = this._createElement('div', className, entityValue);
-    entityNode.appendChild(removeBtn);
-    this.componentNode.insertBefore(entityNode, this._input);
-    this._entityList.push({ value: entityValue, valid: isValid });
-    this._saveHiddenInputValue();
-    this._input.value = '';
-    this._addCallback?.(entityValue);
+    const isValid = this.validateEmail(emailValue);
+    const emailNode = this.createEmailElement(emailValue, isValid);
+    this.componentNode.insertBefore(emailNode, this.input);
+
+    this.emailList.push({ value: emailValue, valid: isValid });
+    this.saveHiddenInputValue();
+    this.input.value = '';
+    this.addCallback?.(emailValue);
   }
 
   /**
-   * Removes existing entity from the emails input.
-   * @param entityValue Entity value that needs to be removed from the emails input.
+   * Removes existing email from the emails input.
+   * @param emailValue Email value that needs to be removed from the emails input.
    */
-  removeEntity(entityValue: string) {
-    const entityNode = Array.prototype.slice
-      .call(this.componentNode.querySelectorAll(`.${EmailsInputComponent.ENTITY_CLASSNAME}`))
-      .filter((node) => node.textContent === entityValue)[0];
-    this.componentNode.removeChild(entityNode);
-    this._entityList = this._entityList.filter((item) => item.value !== entityValue);
-    this._saveHiddenInputValue();
-    this._removeCallback?.(entityValue);
+  removeEmail(emailValue: string) {
+    const emailNode = Array.prototype.slice
+      .call(this.componentNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`))
+      .filter((node) => node.textContent === emailValue)[0];
+    this.componentNode.removeChild(emailNode);
+    this.emailList = this.emailList.filter((item) => item.value !== emailValue);
+    this.saveHiddenInputValue();
+    this.removeCallback?.(emailValue);
   }
 
   /**
-   * Returns the list of all entities added to the emails-input. Both valid and invalid.
+   * Returns the list of all emails added to the emails-input. Both valid and invalid.
    */
-  getEntities(): Entity[] {
-    return this._entityList;
+  getEmails(): Email[] {
+    return this.emailList;
   }
 
   /**
-   * Replaces all entities added to the emails-input with provided entity list.
-   * @param newEntityValues A list of new entity values that need to be added to the emails input.
+   * Replaces all emails added to the emails-input with provided email list.
+   * @param newEmailValues A list of new email values that need to be added to the emails input.
    */
-  replaceAll(newEntityValues: string[]) {
-    this._entityList.forEach((item) => this.removeEntity(item.value));
-    newEntityValues.forEach((value) => this.addEntity(value.trim()));
+  replaceAll(newEmailValues: string[]) {
+    this.clearAll();
+    newEmailValues.forEach((value) => this.addEmail(value));
   }
 
   /**
-   * Callback firing when the entity is added to the emails-input.
+   * Callback firing when the email is added to the emails-input.
    * @param callback Callback handler function.
    */
-  onEntityAdded(callback: any) {
-    this._addCallback = (entityValue: string) => callback(entityValue);
+  onEmailAdded(callback: any) {
+    this.addCallback = (emailValue: string) => callback(emailValue);
   }
 
   /**
-   * Callback firing when the entity is removed from the emails-input.
+   * Callback firing when the email is removed from the emails-input.
    * @param callback Callback handler function.
    */
-  onEntityRemoved(callback: any) {
-    this._removeCallback = (entityValue: string) => callback(entityValue);
+  onEmailRemoved(callback: any) {
+    this.removeCallback = (emailValue: string) => callback(emailValue);
   }
 }

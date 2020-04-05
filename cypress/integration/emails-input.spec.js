@@ -13,22 +13,22 @@ describe('EmailsInputComponent', () => {
     cy.get('.emails-input__input').should('be.focused');
   })
 
-  it('should add entity on ENTER and COMMA key', () => {
+  it('should add email on ENTER and COMMA key', () => {
     // act
     cy.get('.emails-input__input').type('HelloWorld{enter}jason.bourne@mail.com,foma.kiniaev@aol.com,');
 
     // assert
-    cy.get('.emails-input__entity:nth-child(1)').should('contain.text', 'HelloWorld');
-    cy.get('.emails-input__entity:nth-child(2)').should('contain.text', 'jason.bourne@mail.com');
-    cy.get('.emails-input__entity:nth-child(3)').should('contain.text', 'foma.kiniaev@aol.com');
+    cy.get('.emails-input__email:nth-child(1)').should('contain.text', 'HelloWorld');
+    cy.get('.emails-input__email:nth-child(2)').should('contain.text', 'jason.bourne@mail.com');
+    cy.get('.emails-input__email:nth-child(3)').should('contain.text', 'foma.kiniaev@aol.com');
   })
 
-  it('should remove entity on BACKSPACE key', () => {
+  it('should remove email on BACKSPACE key', () => {
     // act
     cy.get('.emails-input__input').type('{backspace}{backspace}{backspace}');
 
     // assert
-    cy.get('.emails-input__entity').should('not.exist');
+    cy.get('.emails-input__email').should('not.exist');
   })
 
   it('should distinguish valid and invalid emails', () => {
@@ -36,16 +36,16 @@ describe('EmailsInputComponent', () => {
     cy.get('.emails-input__input').type('HelloWorld{enter}foma.kiniaev@gmail.com{enter}');
 
     // assert
-    cy.get('.emails-input__entity:nth-child(1)').should('have.class', 'is-invalid');
-    cy.get('.emails-input__entity:nth-child(2)').should('not.have.class', 'is-invalid');
+    cy.get('.emails-input__email:nth-child(1)').should('have.class', 'is-invalid');
+    cy.get('.emails-input__email:nth-child(2)').should('not.have.class', 'is-invalid');
   })
 
-  it('should remove entity on clicking remove entity button', () => {
+  it('should remove email on clicking remove email button', () => {
     // act
-    cy.get('.emails-input__entity-btn').click({ multiple: true });
+    cy.get('.emails-input__email-btn').click({ multiple: true });
 
     // assert
-    cy.get('.emails-input__entity').should('not.exist');
+    cy.get('.emails-input__email').should('not.exist');
   })
 
   it('should add random email on clicking "Add email" button', () => {
@@ -55,7 +55,7 @@ describe('EmailsInputComponent', () => {
     }
 
     // assert
-    cy.get('.emails-input__entity').should('have.length', 10);
+    cy.get('.emails-input__email').should('have.length', 10);
   })
 
   it('should return valid emails count on clicking "Get emails count" button', () => {

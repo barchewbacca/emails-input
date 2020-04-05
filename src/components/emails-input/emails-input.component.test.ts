@@ -3,210 +3,258 @@ import EmailsInputComponent, { Key } from './emails-input.component';
 describe('EmailsInputComponent', () => {
   let emailsInputComponent: EmailsInputComponent;
 
-  beforeAll(() => {
-    // arrange
-    const mockNodeContainer = document.createElement('div');
-    mockNodeContainer.setAttribute('data-component', 'emails-input');
-    mockNodeContainer.setAttribute('id', 'qa-emails-input');
-    mockNodeContainer.setAttribute('name', 'qa-emails-name');
-    emailsInputComponent = new EmailsInputComponent(mockNodeContainer);
-    emailsInputComponent.onEntityAdded(() => {});
-    emailsInputComponent.onEntityRemoved(() => {});
+  describe('when container node null', () => {
+    test('should throw an error', () => {
+      // arrange
+      const mockNodeContainer = (null as unknown) as HTMLElement;
+      try {
+        // act
+        emailsInputComponent = new EmailsInputComponent(mockNodeContainer);
+      } catch (error) {
+        // assert
+        expect(error).toEqual(new Error('Container node is not found.'));
+      }
+    });
   });
 
-  test('should render', () => {
-    // assert
-    expect(EmailsInputComponent).toBeTruthy();
-  });
+  describe('when container node is provided', () => {
+    beforeAll(() => {
+      // arrange
+      const mockNodeContainer = document.createElement('div');
+      mockNodeContainer.setAttribute('data-component', 'emails-input');
+      mockNodeContainer.setAttribute('id', 'qa-emails-input');
+      mockNodeContainer.setAttribute('name', 'qa-emails-name');
+      const mockNodeParentContainer = document.createElement('div');
+      mockNodeParentContainer.appendChild(mockNodeContainer);
+      emailsInputComponent = new EmailsInputComponent(mockNodeContainer);
+      emailsInputComponent.onEmailAdded(() => {});
+      emailsInputComponent.onEmailRemoved(() => {});
+    });
 
-  it('should add entity', () => {
-    // act
-    emailsInputComponent.addEntity('foma@kiniaev.com');
+    test('should render', () => {
+      // assert
+      expect(EmailsInputComponent).toBeTruthy();
+    });
 
-    // assert
-    expect(emailsInputComponent.getEntities()).toEqual([
-      { value: 'foma@kiniaev.com', valid: true },
-    ]);
-  });
+    it('should add email', () => {
+      // act
+      emailsInputComponent.addEmail('foma@kiniaev.com');
 
-  it('should not add entity if it is empty', () => {
-    // act
-    emailsInputComponent.addEntity('');
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([
+        { value: 'foma@kiniaev.com', valid: true },
+      ]);
+    });
 
-    // assert
-    expect(emailsInputComponent.getEntities()).toEqual([
-      { value: 'foma@kiniaev.com', valid: true },
-    ]);
-  });
+    it('should not add email if it is empty', () => {
+      // act
+      emailsInputComponent.addEmail('');
 
-  it('should not add same entity twice', () => {
-    // act
-    emailsInputComponent.addEntity('foma@kiniaev.com');
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([
+        { value: 'foma@kiniaev.com', valid: true },
+      ]);
+    });
 
-    // assert
-    expect(emailsInputComponent.getEntities()).toEqual([
-      { value: 'foma@kiniaev.com', valid: true },
-    ]);
-  });
+    it('should not add same email twice', () => {
+      // act
+      console.error = jest.fn();
+      emailsInputComponent.addEmail('foma@kiniaev.com');
 
-  it('should add invalid entity', () => {
-    // act
-    emailsInputComponent.addEntity('Foma Kiniaev');
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([
+        { value: 'foma@kiniaev.com', valid: true },
+      ]);
+      expect(console.error).toHaveBeenCalledWith(
+        'Value "foma@kiniaev.com" is already in the list!',
+      );
+    });
 
-    // assert
-    expect(emailsInputComponent.getEntities()).toEqual([
-      { value: 'foma@kiniaev.com', valid: true },
-      { value: 'Foma Kiniaev', valid: false },
-    ]);
-  });
+    it('should add invalid email', () => {
+      // act
+      emailsInputComponent.addEmail('Foma Kiniaev');
 
-  it('should replace all entities', () => {
-    // act
-    emailsInputComponent.replaceAll(['hideo@kodjima.com']);
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([
+        { value: 'foma@kiniaev.com', valid: true },
+        { value: 'Foma Kiniaev', valid: false },
+      ]);
+    });
 
-    // assert
-    expect(emailsInputComponent.getEntities()).toEqual([
-      { value: 'hideo@kodjima.com', valid: true },
-    ]);
-  });
+    it('should remove email', () => {
+      // act
+      emailsInputComponent.removeEmail('foma@kiniaev.com');
 
-  it('should remove entitity on BACKSPACE key', () => {
-    // arrange
-    emailsInputComponent.removeEntity = jest.fn();
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([{ value: 'Foma Kiniaev', valid: false }]);
+    });
 
-    // act
-    emailsInputComponent['_handleKeydown']({
-      keyCode: Key.BACKSPACE,
-      preventDefault: () => {},
-    } as KeyboardEvent);
+    it('should replace all emails', () => {
+      // act
+      emailsInputComponent.replaceAll(['hideo@kodjima.com']);
 
-    // assert
-    expect(emailsInputComponent.removeEntity).toHaveBeenCalledWith('hideo@kodjima.com');
-  });
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([
+        { value: 'hideo@kodjima.com', valid: true },
+      ]);
+    });
 
-  it('should not call remove entitity on BACKSPACE key if no entities left or value not empty', () => {
-    // arrange
-    emailsInputComponent['_input'].value = 'test-backspace';
-    emailsInputComponent.removeEntity = jest.fn();
+    it('should parse provided csv string and add email for each item', () => {
+      // act
+      emailsInputComponent.addEmail('test@test.com,test@hello,');
 
-    // act
-    emailsInputComponent['_handleKeydown']({
-      keyCode: Key.BACKSPACE,
-      preventDefault: () => {},
-    } as KeyboardEvent);
+      // assert
+      expect(emailsInputComponent.getEmails()).toEqual([
+        { value: 'hideo@kodjima.com', valid: true },
+        { value: 'test@test.com', valid: true },
+        { value: 'test@hello', valid: false },
+      ]);
+    });
 
-    // assert
-    expect(emailsInputComponent.removeEntity).not.toHaveBeenCalled();
-  });
+    it('should remove email on BACKSPACE key', () => {
+      // arrange
+      emailsInputComponent.removeEmail = jest.fn();
 
-  it('should add entitity on COMMA key', () => {
-    // arrange
-    emailsInputComponent.addEntity = jest.fn();
-    emailsInputComponent['_input'].value = 'test-comma';
+      // act
+      emailsInputComponent['handleKeydown']({
+        keyCode: Key.BACKSPACE,
+        preventDefault: () => {},
+      } as KeyboardEvent);
 
-    // act
-    emailsInputComponent['_handleKeydown']({
-      keyCode: Key.COMMA,
-      preventDefault: () => {},
-    } as KeyboardEvent);
+      // assert
+      expect(emailsInputComponent.removeEmail).toHaveBeenCalledWith('test@hello');
+    });
 
-    // assert
-    expect(emailsInputComponent.addEntity).toHaveBeenCalledWith('test-comma');
-  });
+    it('should not call remove email on BACKSPACE key if no emails left or value not empty', () => {
+      // arrange
+      emailsInputComponent['input'].value = 'test-backspace';
+      emailsInputComponent.removeEmail = jest.fn();
 
-  it('should add entitity on TAB key', () => {
-    // arrange
-    emailsInputComponent.addEntity = jest.fn();
-    emailsInputComponent['_input'].value = 'test-tab';
+      // act
+      emailsInputComponent['handleKeydown']({
+        keyCode: Key.BACKSPACE,
+        preventDefault: () => {},
+      } as KeyboardEvent);
 
-    // act
-    emailsInputComponent['_handleKeydown']({
-      keyCode: Key.TAB,
-      preventDefault: () => {},
-    } as KeyboardEvent);
+      // assert
+      expect(emailsInputComponent.removeEmail).not.toHaveBeenCalled();
+    });
 
-    // assert
-    expect(emailsInputComponent.addEntity).toHaveBeenCalledWith('test-tab');
-  });
+    it('should add email on COMMA key', () => {
+      // arrange
+      emailsInputComponent.addEmail = jest.fn();
+      emailsInputComponent['input'].value = 'test-comma';
 
-  it('should not add entitity on TAB key when value is empty', () => {
-    // arrange
-    emailsInputComponent.addEntity = jest.fn();
-    emailsInputComponent['_input'].value = '';
+      // act
+      emailsInputComponent['handleKeydown']({
+        keyCode: Key.COMMA,
+        preventDefault: () => {},
+      } as KeyboardEvent);
 
-    // act
-    emailsInputComponent['_handleKeydown']({
-      keyCode: Key.TAB,
-      preventDefault: () => {},
-    } as KeyboardEvent);
+      // assert
+      expect(emailsInputComponent.addEmail).toHaveBeenCalledWith('test-comma');
+    });
 
-    // assert
-    expect(emailsInputComponent.addEntity).not.toHaveBeenCalled();
-  });
+    it('should add email on TAB key', () => {
+      // arrange
+      emailsInputComponent.addEmail = jest.fn();
+      emailsInputComponent['input'].value = 'test-tab';
 
-  it('should add entitity on ENTER key', () => {
-    // arrange
-    emailsInputComponent.addEntity = jest.fn();
-    emailsInputComponent['_input'].value = 'test-enter';
+      // act
+      emailsInputComponent['handleKeydown']({
+        keyCode: Key.TAB,
+        preventDefault: () => {},
+      } as KeyboardEvent);
 
-    // act
-    emailsInputComponent['_handleKeydown']({
-      keyCode: Key.ENTER,
-      preventDefault: () => {},
-    } as KeyboardEvent);
+      // assert
+      expect(emailsInputComponent.addEmail).toHaveBeenCalledWith('test-tab');
+    });
 
-    // assert
-    expect(emailsInputComponent.addEntity).toHaveBeenCalledWith('test-enter');
-  });
+    it('should not add email on TAB key when value is empty', () => {
+      // arrange
+      emailsInputComponent.addEmail = jest.fn();
+      emailsInputComponent['input'].value = '';
 
-  it('should add styles on component focus', () => {
-    // act
-    emailsInputComponent['_handleComponentFocus']();
+      // act
+      emailsInputComponent['handleKeydown']({
+        keyCode: Key.TAB,
+        preventDefault: () => {},
+      } as KeyboardEvent);
 
-    // assert
-    expect(
-      emailsInputComponent.componentNode.classList.contains(EmailsInputComponent.FOCUSED_CLASSNAME),
-    ).toBe(true);
-  });
+      // assert
+      expect(emailsInputComponent.addEmail).not.toHaveBeenCalled();
+    });
 
-  it('should add styles on input focus', () => {
-    // act
-    emailsInputComponent['_handleInputFocus']();
+    it('should add email on ENTER key', () => {
+      // arrange
+      emailsInputComponent.addEmail = jest.fn();
+      emailsInputComponent['input'].value = 'test-enter';
 
-    // assert
-    expect(
-      emailsInputComponent.componentNode.classList.contains(EmailsInputComponent.FOCUSED_CLASSNAME),
-    ).toBe(true);
-  });
+      // act
+      emailsInputComponent['handleKeydown']({
+        keyCode: Key.ENTER,
+        preventDefault: () => {},
+      } as KeyboardEvent);
 
-  it('should add entity and remove focus styling on blur', () => {
-    // arrange
-    emailsInputComponent.addEntity = jest.fn();
-    emailsInputComponent.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
-    emailsInputComponent['_input'].value = 'test-blur';
+      // assert
+      expect(emailsInputComponent.addEmail).toHaveBeenCalledWith('test-enter');
+    });
 
-    // act
-    emailsInputComponent['_handleBlur']();
+    it('should add styles on component focus', () => {
+      // act
+      emailsInputComponent['handleComponentFocus']();
 
-    // assert
-    expect(
-      emailsInputComponent.componentNode.classList.contains(EmailsInputComponent.FOCUSED_CLASSNAME),
-    ).toBe(false);
-    expect(emailsInputComponent.addEntity).toHaveBeenCalledWith('test-blur');
-  });
+      // assert
+      expect(
+        emailsInputComponent.componentNode.classList.contains(
+          EmailsInputComponent.FOCUSED_CLASSNAME,
+        ),
+      ).toBe(true);
+    });
 
-  it('should parse string and add entites on paste', (done) => {
-    // arrange
-    emailsInputComponent.addEntity = jest.fn();
-    emailsInputComponent['_input'].value = 'test-paste-1, test-paste-2, test-paste-3';
+    it('should add styles on input focus', () => {
+      // act
+      emailsInputComponent['handleInputFocus']();
 
-    // act
-    emailsInputComponent['_handlePaste']();
+      // assert
+      expect(
+        emailsInputComponent.componentNode.classList.contains(
+          EmailsInputComponent.FOCUSED_CLASSNAME,
+        ),
+      ).toBe(true);
+    });
 
-    // assert
-    setTimeout(() => {
-      expect(emailsInputComponent.addEntity).toHaveBeenCalledTimes(3);
-      done();
-    }, 0);
+    it('should add email and remove focus styling on blur', () => {
+      // arrange
+      emailsInputComponent.addEmail = jest.fn();
+      emailsInputComponent.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+      emailsInputComponent['input'].value = 'test-blur';
+
+      // act
+      emailsInputComponent['handleBlur']();
+
+      // assert
+      expect(
+        emailsInputComponent.componentNode.classList.contains(
+          EmailsInputComponent.FOCUSED_CLASSNAME,
+        ),
+      ).toBe(false);
+      expect(emailsInputComponent.addEmail).toHaveBeenCalledWith('test-blur');
+    });
+
+    it('should parse string and add emails on paste', (done) => {
+      // arrange
+      emailsInputComponent.addEmail = jest.fn();
+      emailsInputComponent['input'].value = 'test-paste-1, test-paste-2, test-paste-3';
+
+      // act
+      emailsInputComponent['handlePaste']();
+
+      // assert
+      setTimeout(() => {
+        expect(emailsInputComponent.addEmail).toHaveBeenCalledTimes(3);
+        done();
+      }, 0);
+    });
   });
 });
