@@ -149,7 +149,7 @@ yarn e2e:open
 npm run e2e:open
 ```
 
-You may find the e2e tests capture video here: `cypress/videos/`.
+You may find the e2e tests capture video here: `cypress/videos/`
 
 <img src="e2e-report.gif" alt="e2e tests report screenshot">
 
