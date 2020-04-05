@@ -112,6 +112,11 @@ yarn test:coverage
 npm run test:coverage
 ```
 
+You may also open the coverage report locally from here:
+`coverage/lcov-report/emails-input.component.ts.html`
+
+<img src="unit-report.png" alt="Unit tests report screenshot">
+
 ### e2e tests
 
 In order to check e2e tests coverage headlessly(without displaying the browser) run:
@@ -144,9 +149,15 @@ yarn e2e:open
 npm run e2e:open
 ```
 
+You may find the e2e tests capture video here: `cypress/videos/`.
+
+<img src="e2e-report.png" alt="e2e tests report screenshot">
+
 ## 🎈 Usage <a name="usage"></a>
 
-Create markup. You may want to pass the usual attributes of the input:
+#### Create markup
+
+You may also want to pass the usual attributes of the input:
 
 ```html
 <div
@@ -157,7 +168,7 @@ Create markup. You may want to pass the usual attributes of the input:
 ></div>
 ```
 
-Initialize component:
+#### Initialize component
 
 ```ts
 // get the element
