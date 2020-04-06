@@ -26,12 +26,6 @@ export default class EmailsInputComponent {
   static readonly INVALID_CLASSNAME = 'is-invalid';
 
   /**
-   * Component node which contains the emails and the input.
-   * @type {HTMLElement}
-   */
-  componentNode: HTMLElement;
-
-  /**
    * The hidden input that holds the value of all valid added emails.
    * This value is taken on form submit.
    * @private
@@ -79,9 +73,6 @@ export default class EmailsInputComponent {
    * Replaces container node with the generated element.
    */
   private renderComponent() {
-    this.componentNode = this.createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
-    this.componentNode.tabIndex = 0;
-
     const attributes = Array.prototype.slice
       .call(this.containerNode.attributes)
       .filter((att) => att.name !== 'data-component');
@@ -92,16 +83,23 @@ export default class EmailsInputComponent {
     ) as HTMLInputElement;
     this.input.type = 'email';
     const inputAttributes = attributes.filter((att) => att.name !== 'name');
-    inputAttributes.forEach((att) => this.input.setAttribute(att.name, att.value));
-    this.componentNode.appendChild(this.input);
+    inputAttributes.forEach((att) => {
+      this.input.setAttribute(att.name, att.value);
+      this.containerNode.removeAttribute(att.name);
+    });
+    this.containerNode.appendChild(this.input);
 
     this.hiddenInput = this.createElement('input') as HTMLInputElement;
     this.hiddenInput.type = 'hidden';
     const hiddenInputAttributes = attributes.filter((att) => att.name === 'name');
-    hiddenInputAttributes.forEach((att) => this.hiddenInput.setAttribute(att.name, att.value));
-    this.componentNode.appendChild(this.hiddenInput);
+    hiddenInputAttributes.forEach((att) => {
+      this.hiddenInput.setAttribute(att.name, att.value);
+      this.containerNode.removeAttribute(att.name);
+    });
+    this.containerNode.appendChild(this.hiddenInput);
 
-    this.containerNode!.parentNode!.replaceChild(this.componentNode, this.containerNode);
+    this.containerNode.classList.add(EmailsInputComponent.COMPONENT_CLASSNAME);
+    this.containerNode.tabIndex = 0;
   }
 
   /**
@@ -161,7 +159,7 @@ export default class EmailsInputComponent {
    * Adds event listeners to the emails input.
    */
   private addEventListeners() {
-    this.componentNode.addEventListener('focus', this.handleComponentFocus);
+    this.containerNode.addEventListener('focus', this.handleComponentFocus);
     this.input.addEventListener('focus', this.handleInputFocus);
     this.input.addEventListener('blur', this.handleBlur);
     this.input.addEventListener('paste', this.handlePaste);
@@ -174,7 +172,7 @@ export default class EmailsInputComponent {
    */
   private handleComponentFocus = () => {
     this.input.focus();
-    this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+    this.containerNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 
   /**
@@ -182,7 +180,7 @@ export default class EmailsInputComponent {
    * @private
    */
   private handleInputFocus = () => {
-    this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+    this.containerNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 
   /**
@@ -191,7 +189,7 @@ export default class EmailsInputComponent {
    */
   private handleBlur = () => {
     this.addEmail(this.input.value);
-    this.componentNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
+    this.containerNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 
   /**
@@ -250,10 +248,10 @@ export default class EmailsInputComponent {
    */
   private clearAll() {
     const emailNodes = Array.prototype.slice.call(
-      this.componentNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`),
+      this.containerNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`),
     );
     emailNodes.forEach((emailNode) => {
-      this.componentNode.removeChild(emailNode);
+      this.containerNode.removeChild(emailNode);
       this.removeCallback?.(emailNode.textContent as string);
     });
     this.emailList = [];
@@ -282,7 +280,7 @@ export default class EmailsInputComponent {
 
     const isValid = this.validateEmail(emailValue);
     const emailNode = this.createEmailElement(emailValue, isValid);
-    this.componentNode.insertBefore(emailNode, this.input);
+    this.containerNode.insertBefore(emailNode, this.input);
 
     this.emailList.push({ value: emailValue, valid: isValid });
     this.saveHiddenInputValue();
@@ -296,9 +294,9 @@ export default class EmailsInputComponent {
    */
   removeEmail(emailValue: string) {
     const emailNode = Array.prototype.slice
-      .call(this.componentNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`))
+      .call(this.containerNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`))
       .filter((node) => node.textContent === emailValue)[0];
-    this.componentNode.removeChild(emailNode);
+    this.containerNode.removeChild(emailNode);
     this.emailList = this.emailList.filter((item) => item.value !== emailValue);
     this.saveHiddenInputValue();
     this.removeCallback?.(emailValue);

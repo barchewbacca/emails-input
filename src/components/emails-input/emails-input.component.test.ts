@@ -2,14 +2,15 @@ import EmailsInputComponent, { Key } from './emails-input.component';
 
 describe('EmailsInputComponent', () => {
   let emailsInputComponent: EmailsInputComponent;
+  let mockContainerNode: HTMLElement;
 
   describe('when container node null', () => {
     test('should throw an error', () => {
       // arrange
-      const mockNodeContainer = (null as unknown) as HTMLElement;
+      mockContainerNode = (null as unknown) as HTMLElement;
       try {
         // act
-        emailsInputComponent = new EmailsInputComponent(mockNodeContainer);
+        emailsInputComponent = new EmailsInputComponent(mockContainerNode);
       } catch (error) {
         // assert
         expect(error).toEqual(new Error('Container node is not found.'));
@@ -20,13 +21,13 @@ describe('EmailsInputComponent', () => {
   describe('when container node is provided', () => {
     beforeAll(() => {
       // arrange
-      const mockNodeContainer = document.createElement('div');
-      mockNodeContainer.setAttribute('data-component', 'emails-input');
-      mockNodeContainer.setAttribute('id', 'qa-emails-input');
-      mockNodeContainer.setAttribute('name', 'qa-emails-name');
+      mockContainerNode = document.createElement('div');
+      mockContainerNode.setAttribute('data-component', 'emails-input');
+      mockContainerNode.setAttribute('id', 'qa-emails-input');
+      mockContainerNode.setAttribute('name', 'qa-emails-name');
       const mockNodeParentContainer = document.createElement('div');
-      mockNodeParentContainer.appendChild(mockNodeContainer);
-      emailsInputComponent = new EmailsInputComponent(mockNodeContainer);
+      mockNodeParentContainer.appendChild(mockContainerNode);
+      emailsInputComponent = new EmailsInputComponent(mockContainerNode);
       emailsInputComponent.onEmailAdded(() => {});
       emailsInputComponent.onEmailRemoved(() => {});
     });
@@ -205,11 +206,9 @@ describe('EmailsInputComponent', () => {
       emailsInputComponent['handleComponentFocus']();
 
       // assert
-      expect(
-        emailsInputComponent.componentNode.classList.contains(
-          EmailsInputComponent.FOCUSED_CLASSNAME,
-        ),
-      ).toBe(true);
+      expect(mockContainerNode.classList.contains(EmailsInputComponent.FOCUSED_CLASSNAME)).toBe(
+        true,
+      );
     });
 
     it('should add styles on input focus', () => {
@@ -217,28 +216,24 @@ describe('EmailsInputComponent', () => {
       emailsInputComponent['handleInputFocus']();
 
       // assert
-      expect(
-        emailsInputComponent.componentNode.classList.contains(
-          EmailsInputComponent.FOCUSED_CLASSNAME,
-        ),
-      ).toBe(true);
+      expect(mockContainerNode.classList.contains(EmailsInputComponent.FOCUSED_CLASSNAME)).toBe(
+        true,
+      );
     });
 
     it('should add email and remove focus styling on blur', () => {
       // arrange
       emailsInputComponent.addEmail = jest.fn();
-      emailsInputComponent.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+      mockContainerNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
       emailsInputComponent['input'].value = 'test-blur';
 
       // act
       emailsInputComponent['handleBlur']();
 
       // assert
-      expect(
-        emailsInputComponent.componentNode.classList.contains(
-          EmailsInputComponent.FOCUSED_CLASSNAME,
-        ),
-      ).toBe(false);
+      expect(mockContainerNode.classList.contains(EmailsInputComponent.FOCUSED_CLASSNAME)).toBe(
+        false,
+      );
       expect(emailsInputComponent.addEmail).toHaveBeenCalledWith('test-blur');
     });
 

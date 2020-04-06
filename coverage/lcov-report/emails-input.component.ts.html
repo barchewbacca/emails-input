@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">99.18% </span>
+                <span class="strong">99.19% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>121/122</span>
+                <span class='fraction'>122/123</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>109/109</span>
+                <span class='fraction'>112/112</span>
             </div>
         
             
@@ -393,9 +393,7 @@
 <a name='L334'></a><a href='#L334'>334</a>
 <a name='L335'></a><a href='#L335'>335</a>
 <a name='L336'></a><a href='#L336'>336</a>
-<a name='L337'></a><a href='#L337'>337</a>
-<a name='L338'></a><a href='#L338'>338</a>
-<a name='L339'></a><a href='#L339'>339</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L337'></a><a href='#L337'>337</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -421,12 +419,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -475,9 +467,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -491,13 +480,20 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -522,17 +518,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -761,12 +757,6 @@ export default class EmailsInputComponent {
   static readonly INVALID_CLASSNAME = 'is-invalid';
 &nbsp;
   /**
-   * Component node which contains the emails and the input.
-   * @type {HTMLElement}
-   */
-  componentNode: HTMLElement;
-&nbsp;
-  /**
    * The hidden input that holds the value of all valid added emails.
    * This value is taken on form submit.
    * @private
@@ -814,9 +804,6 @@ export default class EmailsInputComponent {
    * Replaces container node with the generated element.
    */
   private renderComponent() {
-    this.componentNode = this.createElement('div', EmailsInputComponent.COMPONENT_CLASSNAME);
-    this.componentNode.tabIndex = 0;
-&nbsp;
     const attributes = Array.prototype.slice
       .call(this.containerNode.attributes)
       .filter((att) =&gt; att.name !== 'data-component');
@@ -827,16 +814,23 @@ export default class EmailsInputComponent {
     ) as HTMLInputElement;
     this.input.type = 'email';
     const inputAttributes = attributes.filter((att) =&gt; att.name !== 'name');
-    inputAttributes.forEach((att) =&gt; this.input.setAttribute(att.name, att.value));
-    this.componentNode.appendChild(this.input);
+    inputAttributes.forEach((att) =&gt; {
+      this.input.setAttribute(att.name, att.value);
+      this.containerNode.removeAttribute(att.name);
+    });
+    this.containerNode.appendChild(this.input);
 &nbsp;
     this.hiddenInput = this.createElement('input') as HTMLInputElement;
     this.hiddenInput.type = 'hidden';
     const hiddenInputAttributes = attributes.filter((att) =&gt; att.name === 'name');
-    hiddenInputAttributes.forEach((att) =&gt; this.hiddenInput.setAttribute(att.name, att.value));
-    this.componentNode.appendChild(this.hiddenInput);
+    hiddenInputAttributes.forEach((att) =&gt; {
+      this.hiddenInput.setAttribute(att.name, att.value);
+      this.containerNode.removeAttribute(att.name);
+    });
+    this.containerNode.appendChild(this.hiddenInput);
 &nbsp;
-    this.containerNode!.parentNode!.replaceChild(this.componentNode, this.containerNode);
+    this.containerNode.classList.add(EmailsInputComponent.COMPONENT_CLASSNAME);
+    this.containerNode.tabIndex = 0;
   }
 &nbsp;
   /**
@@ -896,7 +890,7 @@ export default class EmailsInputComponent {
    * Adds event listeners to the emails input.
    */
   private addEventListeners() {
-    this.componentNode.addEventListener('focus', this.handleComponentFocus);
+    this.containerNode.addEventListener('focus', this.handleComponentFocus);
     this.input.addEventListener('focus', this.handleInputFocus);
     this.input.addEventListener('blur', this.handleBlur);
     this.input.addEventListener('paste', this.handlePaste);
@@ -909,7 +903,7 @@ export default class EmailsInputComponent {
    */
   private handleComponentFocus = () =&gt; {
     this.input.focus();
-    this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+    this.containerNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 &nbsp;
   /**
@@ -917,7 +911,7 @@ export default class EmailsInputComponent {
    * @private
    */
   private handleInputFocus = () =&gt; {
-    this.componentNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
+    this.containerNode.classList.add(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 &nbsp;
   /**
@@ -926,7 +920,7 @@ export default class EmailsInputComponent {
    */
   private handleBlur = () =&gt; {
     this.addEmail(this.input.value);
-    this.componentNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
+    this.containerNode.classList.remove(EmailsInputComponent.FOCUSED_CLASSNAME);
   };
 &nbsp;
   /**
@@ -984,11 +978,11 @@ export default class EmailsInputComponent {
    * Removes all emails from the emails-input.
    */
   private clearAll() {
-    const emailNodes = this.componentNode.querySelectorAll(
-      `.${EmailsInputComponent.EMAIL_CLASSNAME}`,
+    const emailNodes = Array.prototype.slice.call(
+      this.containerNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`),
     );
     emailNodes.forEach((emailNode) =&gt; {
-      this.componentNode.removeChild(emailNode);
+      this.containerNode.removeChild(emailNode);
       this.removeCallback?.(emailNode.textContent as string);
     });
     this.emailList = [];
@@ -1017,7 +1011,7 @@ export default class EmailsInputComponent {
 &nbsp;
     const isValid = this.validateEmail(emailValue);
     const emailNode = this.createEmailElement(emailValue, isValid);
-    this.componentNode.insertBefore(emailNode, this.input);
+    this.containerNode.insertBefore(emailNode, this.input);
 &nbsp;
     this.emailList.push({ value: emailValue, valid: isValid });
     this.saveHiddenInputValue();
@@ -1031,9 +1025,9 @@ export default class EmailsInputComponent {
    */
   removeEmail(emailValue: string) {
     const emailNode = Array.prototype.slice
-      .call(this.componentNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`))
+      .call(this.containerNode.querySelectorAll(`.${EmailsInputComponent.EMAIL_CLASSNAME}`))
       .filter((node) =&gt; node.textContent === emailValue)[0];
-    this.componentNode.removeChild(emailNode);
+    this.containerNode.removeChild(emailNode);
     this.emailList = this.emailList.filter((item) =&gt; item.value !== emailValue);
     this.saveHiddenInputValue();
     this.removeCallback?.(emailValue);
@@ -1078,7 +1072,7 @@ export default class EmailsInputComponent {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sun Apr 05 2020 20:13:24 GMT+0200 (Central European Summer Time)
+                at Mon Apr 06 2020 09:42:24 GMT+0200 (Central European Summer Time)
             </div>
         </div>
         <script src="prettify.js"></script>
